@@ -87,12 +87,15 @@ local function CreateIcon(self,layer,sublevel,size,point)
 end
 
 local function ColorHealthbarOnThreat(self,unit)
-  if self.colorThreat and self.colorThreatInvers and unit and UnitThreatSituation("player", unit) == 3 then
-    self:SetStatusBarColor(unpack(L.C.colors.healthbar.threatInvers))
-    self.bg:SetVertexColor(unpack(L.C.colors.healthbar.threatInversBG))
-  elseif self.colorThreat and unit and UnitThreatSituation(unit) == 3 then
-    self:SetStatusBarColor(unpack(L.C.colors.healthbar.threat))
-    self.bg:SetVertexColor(unpack(L.C.colors.healthbar.threatBG))
+  if self.colorThreat and unit then
+    local status = UnitThreatSituation("player", unit)
+    if status and (status == 3 and not self.colorThreatInvers) or (status == 0 and self.colorThreatInvers) then
+      self:SetStatusBarColor(unpack(L.C.colors.healthbar.threatInvers))
+      self.bg:SetVertexColor(unpack(L.C.colors.healthbar.threatInversBG))
+    elseif status and (status == 3 and self.colorThreatInvers) or (status == 0 and not self.colorThreatInvers) then
+      self:SetStatusBarColor(unpack(L.C.colors.healthbar.threat))
+      self.bg:SetVertexColor(unpack(L.C.colors.healthbar.threatBG))
+    end
   end
 end
 
@@ -252,9 +255,8 @@ local function CreateHealthBar(self)
   s.colorThreat = self.cfg.healthbar.colorThreat
   s.colorThreatInvers = self.cfg.healthbar.colorThreatInvers
   s.bg.multiplier = L.C.colors.bgMultiplier
-  s.frequentUpdates = self.cfg.healthbar.frequentUpdates
   --hooks
-  s.PostUpdate = PostUpdateHealth
+  s.PostUpdateColor = PostUpdateHealth
   if s.colorThreat then
     self:RegisterEvent("PLAYER_REGEN_ENABLED", L.F.UpdateThreat, true)
     self:RegisterEvent("PLAYER_REGEN_DISABLED", L.F.UpdateThreat, true)
