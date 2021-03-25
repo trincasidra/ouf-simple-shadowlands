@@ -103,9 +103,7 @@ end
 
 --UpdateThreat
 local function UpdateThreat(self,event,unit)
-  if event == "PLAYER_LEAVE_COMBAT" or event == "PLAYER_ENTER_COMBAT" then
-    --do natting
-  elseif self.unit ~= unit then
+  if unit and self.unit ~= unit then
     return
   end
   self.Health:ForceUpdate()
@@ -258,10 +256,10 @@ local function CreateHealthBar(self)
   --hooks
   s.PostUpdate = PostUpdateHealth
   if s.colorThreat then
-    self:RegisterEvent("PLAYER_LEAVE_COMBAT", L.F.UpdateThreat, true)
-    self:RegisterEvent("PLAYER_ENTER_COMBAT", L.F.UpdateThreat, true)
-    self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", L.F.UpdateThreat, true)
-    self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", L.F.UpdateThreat, true)
+    self:RegisterEvent("PLAYER_REGEN_ENABLED", L.F.UpdateThreat, true)
+    self:RegisterEvent("PLAYER_REGEN_DISABLED", L.F.UpdateThreat, true)
+    self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", L.F.UpdateThreat, false)
+    self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", L.F.UpdateThreat, false)
   end
   return s
 end
